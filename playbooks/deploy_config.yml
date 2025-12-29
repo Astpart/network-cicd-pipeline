@@ -1,33 +1,35 @@
 ---
 - name: Deploy Network Configuration
   hosts: all
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Backup current config
-      ios_command:
+      cisco.ios.ios_command:
         commands:
           - show running-config
       register: backup
 
     - name: Ensure backups directory exists (on control machine)
-      file:
+      ansible.builtin.file:
         path: ./backups
         state: directory
+        mode: '0755'
       delegate_to: localhost
       run_once: true
 
     - name: Save backup
-      copy:
+      ansible.builtin.copy:
         content: "{{ backup.stdout[0] }}"
         dest: "./backups/{{ inventory_hostname }}_{{ lookup('pipe', 'date +%s') }}.cfg"
+        mode: '0644'
       delegate_to: localhost
 
     - name: Deploy base config
-      ios_config:
+      cisco.ios.ios_config:
         lines: "{{ lookup('template', '../configs/templates/base_config.j2').splitlines() }}"
         save_when: modified
 
     - name: Deploy OSPF config
-      ios_config:
+      cisco.ios.ios_config:
         lines: "{{ lookup('template', '../configs/templates/ospf_config.j2').splitlines() }}"
         save_when: modified
