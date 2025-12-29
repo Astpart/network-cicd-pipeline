@@ -1,0 +1,11 @@
+*.vault
+*vault.yml
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
+*.retry
+*.log
+backups/*.cfg
+.DS_Store
+

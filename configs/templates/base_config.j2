@@ -1,0 +1,21 @@
+hostname {{ inventory_hostname | upper }}
+!
+ip domain-name lab.local
+!
+username ansible privilege 15 secret ansible123
+enable secret cisco123
+!
+ntp server 8.8.8.8
+!
+logging buffered 51200
+!
+snmp-server community public RO
+snmp-server location DataCenter
+!
+line con 0
+ logging synchronous
+ exec-timeout 30 0
+line vty 0 4
+ login local
+ transport input ssh
+!

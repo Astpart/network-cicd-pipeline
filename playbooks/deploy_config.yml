@@ -1,0 +1,33 @@
+---
+- name: Deploy Network Configuration
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Backup current config
+      ios_command:
+        commands:
+          - show running-config
+      register: backup
+
+    - name: Ensure backups directory exists (on control machine)
+      file:
+        path: ./backups
+        state: directory
+      delegate_to: localhost
+      run_once: true
+
+    - name: Save backup
+      copy:
+        content: "{{ backup.stdout[0] }}"
+        dest: "./backups/{{ inventory_hostname }}_{{ lookup('pipe', 'date +%s') }}.cfg"
+      delegate_to: localhost
+
+    - name: Deploy base config
+      ios_config:
+        lines: "{{ lookup('template', '../configs/templates/base_config.j2').splitlines() }}"
+        save_when: modified
+
+    - name: Deploy OSPF config
+      ios_config:
+        lines: "{{ lookup('template', '../configs/templates/ospf_config.j2').splitlines() }}"
+        save_when: modified
