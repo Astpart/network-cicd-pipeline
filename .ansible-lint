@@ -1,0 +1,21 @@
+---
+# Ansible Lint Configuration
+# https://ansible.readthedocs.io/projects/lint/
+
+# Skip specific rules
+skip_list:
+  - run-once[task]  # Allow run_once despite strategy warning
+
+# Set warning level rules (optional)
+warn_list:
+  - experimental
+
+# Configure rules (optional)
+use_default_rules: true
+
+# Exclude paths (optional)
+exclude_paths:
+  - .github/
+  - venv/
+  - .venv/
+  - backups/
